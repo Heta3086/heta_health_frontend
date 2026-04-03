@@ -2,9 +2,11 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authstore'
+import { useFoodStore } from '@/stores/useFoodStore'
 import { LogIn } from 'lucide-vue-next'
 
 const auth = useAuthStore()
+const foodStore = useFoodStore()
 const router = useRouter()
 
 const email = ref('')
@@ -17,7 +19,9 @@ const handleLogin = async () => {
       password: password.value
     })
 
-    router.push('/dashboard')
+    foodStore.resetAccountState()
+    foodStore.hydrateProfileContext()
+    router.push(foodStore.user && foodStore.bmiCategory ? '/dashboard' : '/profile')
   } catch (error) {
     console.error('Login failed', error)
   }

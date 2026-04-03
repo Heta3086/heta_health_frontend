@@ -11,6 +11,148 @@ const DAY_MAP = {
 	'sunday': 'Sunday'
 }
 
+const TYPE_IMAGE_SEEDS = {
+	breakfast: 'photo-1490645935967-10de6ba17061',
+	lunch: 'photo-1512621776951-a57141f2eefd',
+	dinner: 'photo-1543353071-10c8ba85a904',
+	snack: 'photo-1482049016688-2d3e1b311543',
+	dessert: 'photo-1488477181946-6428a0291777'
+}
+
+const KEYWORD_IMAGE_SEEDS = [
+  { keyword: 'chicken', seed: 'photo-1604908176997-4313ccf2b6b0' },
+  { keyword: 'fish', seed: 'photo-1519708227418-c8fd9a32b7a2' },
+  { keyword: 'egg', seed: 'photo-1482049016688-2d3e1b311543' },
+  { keyword: 'prawn', seed: 'photo-1559847844-5315695dadae' },
+  { keyword: 'rice', seed: 'photo-1516684732162-798a0062be99' },
+  { keyword: 'salad', seed: 'photo-1512621776951-a57141f2eefd' },
+  { keyword: 'soup', seed: 'photo-1547592166-23ac45744acd' },
+  { keyword: 'paratha', seed: 'photo-1505253758473-96b7015fcd40' },
+  { keyword: 'wrap', seed: 'photo-1509722747041-616f39b57569' },
+  { keyword: 'curry', seed: 'photo-1585937421612-70a008356fbe' },
+  { keyword: 'omelette', seed: 'photo-1482049016688-2d3e1b311543' }
+]
+
+const RECIPE_IMAGE_SEEDS = {
+	'peanut butter banana smoothie': 'photo-1505252585461-04db1eb84625',
+	'paneer paratha': 'photo-1505253758473-96b7015fcd40',
+	'panner paratha': 'photo-1505253758473-96b7015fcd40',
+	'chicken rice bowl': 'photo-1512058564366-18510be2db19',
+	'dry fruit milkshake': 'photo-1547592180-85f173990554',
+	'egg bhurji': 'photo-1482049016688-2d3e1b311543',
+	'vegetable upma': 'photo-1498837167922-ddd27525d352',
+	'dal rice': 'photo-1546833999-b9f581a1996d',
+	'grilled chicken salad': 'photo-1512621776951-a57141f2eefd',
+	'vegetable khichdi': 'photo-1484723091739-30a097e8f929',
+	'oats porridge': 'photo-1517673400267-0251440c45dc',
+	'quinoa salad': 'photo-1512621776951-a57141f2eefd',
+	'boiled eggs': 'photo-1482049016688-2d3e1b311543',
+	'grilled fish': 'photo-1519708227418-c8fd9a32b7a2',
+	'vegetable soup': 'photo-1547592166-23ac45744acd',
+	'sprouts salad': 'photo-1512621776951-a57141f2eefd',
+	'chickpea salad': 'photo-1512621776951-a57141f2eefd',
+	'chicken stir fry': 'photo-1603366615917-1fa6dad5c4d1',
+	'vegetable omelette': 'photo-1490645935967-10de6ba17061',
+	'lentil soup': 'photo-1547592166-23ac45744acd',
+	'yogurt fruit bowl': 'photo-1619566636858-adf3ef46400b',
+	'tofu stir fry': 'photo-1528735602780-2552fd46c7af',
+	'shrimp salad': 'photo-1504674900247-0877df9cc836',
+	'corn salad': 'photo-1512621776951-a57141f2eefd',
+	'sesame noodles': 'photo-1512058564366-18510be2db19',
+	'soybean curry': 'photo-1585937421612-70a008356fbe',
+	'lactose free smoothie': 'photo-1505252585461-04db1eb84625',
+	'grilled prawns': 'photo-1559847844-5315695dadae',
+	'tofu salad': 'photo-1528735602780-2552fd46c7af',
+	'corn soup': 'photo-1547592166-23ac45744acd',
+	'sesame toast': 'photo-1547592180-85f173990554',
+	'mushroom soup': 'photo-1547592166-23ac45744acd',
+	'cold coffee': 'photo-1495474472287-4d71bcdd2085',
+	'spicy paneer wrap': 'photo-1509722747041-616f39b57569',
+	'garlic chicken': 'photo-1604908176997-4313ccf2b6b0',
+	'onion paratha': 'photo-1505253758473-96b7015fcd40',
+	'tomato egg curry': 'photo-1490645935967-10de6ba17061',
+	'banana pancakes': 'photo-1547592180-85f173990554',
+	'chocolate oats': 'photo-1517673400267-0251440c45dc',
+	'lemon rice': 'photo-1517248135467-4c7edcad34c4',
+	'avocado salad': 'photo-1512621776951-a57141f2eefd',
+	'chicken tandoori': 'photo-1603366615917-1fa6dad5c4d1',
+	'egg mayo wrap': 'photo-1509722747041-616f39b57569',
+	'baked fish with herbs': 'photo-1519708227418-c8fd9a32b7a2',
+	'egg white scramble': 'photo-1490645935967-10de6ba17061',
+	'chicken keema': 'photo-1604908176997-4313ccf2b6b0',
+	'masala omelette': 'photo-1482049016688-2d3e1b311543',
+	'butter chicken': 'photo-1603366615917-1fa6dad5c4d1',
+	'egg stuffed paratha': 'photo-1505253758473-96b7015fcd40',
+	'chicken caesar salad': 'photo-1512621776951-a57141f2eefd',
+	'boiled egg salad': 'photo-1512621776951-a57141f2eefd',
+	'fish curry': 'photo-1519708227418-c8fd9a32b7a2',
+	'chicken soup': 'photo-1547592166-23ac45744acd',
+	'prawn masala': 'photo-1559847844-5315695dadae',
+	'egg fried rice': 'photo-1512058564366-18510be2db19',
+	'chicken omelette': 'photo-1482049016688-2d3e1b311543'
+}
+
+const DEFAULT_MEAL_IMAGE_SEED = 'photo-1546069901-ba9599a7e63c'
+
+const buildMealSearchImageUrl = (meal) => {
+	const searchTerms = [
+		meal?.name,
+		meal?.type,
+		Array.isArray(meal?.ingredients) ? meal.ingredients.map((item) => item?.name).join(' ') : ''
+	]
+		.filter(Boolean)
+		.join(' ')
+		.trim()
+
+	const query = encodeURIComponent(searchTerms || 'healthy food')
+	return `https://source.unsplash.com/featured/600x400/?${query}`
+}
+
+const getCurrentAuthUserId = () => {
+	const raw = localStorage.getItem('userId')
+	return raw ? String(raw) : ''
+}
+
+const scopedKey = (key, authUserId = getCurrentAuthUserId()) => {
+	return authUserId ? `${key}:${authUserId}` : key
+}
+
+const getMealImageSeed = (meal) => {
+	if (!meal) return DEFAULT_MEAL_IMAGE_SEED
+
+	if (meal.imageSeed) return meal.imageSeed
+	if (meal.image_seed) return meal.image_seed
+
+	const mealName = String(meal.name || '').trim().toLowerCase()
+	if (mealName && RECIPE_IMAGE_SEEDS[mealName]) {
+		return RECIPE_IMAGE_SEEDS[mealName]
+	}
+
+	const searchableText = [
+		meal.name,
+		meal.type,
+		Array.isArray(meal.ingredients) ? meal.ingredients.map((item) => item?.name).join(' ') : ''
+	]
+		.filter(Boolean)
+		.join(' ')
+		.toLowerCase()
+
+	for (const item of KEYWORD_IMAGE_SEEDS) {
+		if (searchableText.includes(item.keyword)) {
+			return item.seed
+		}
+	}
+
+	const mealType = String(meal.type || '').toLowerCase()
+	for (const [key, seed] of Object.entries(TYPE_IMAGE_SEEDS)) {
+		if (mealType.includes(key)) {
+			return seed
+		}
+	}
+
+	return buildMealSearchImageUrl(meal) || DEFAULT_MEAL_IMAGE_SEED
+}
+
 const getEmptyPlanner = () => ({
 	Monday: null,
 	Tuesday: null,
@@ -31,11 +173,11 @@ const normalizeMeal = (meal) => ({
 	name: meal.name,
 	type: meal.type,
 	calories: meal.calories ?? 0,
-	imageSeed: meal.imageSeed || 'photo-1546069901-ba9599a7e63c'
+	imageSeed: getMealImageSeed(meal)
 })
 
 const getStoredProfileUserId = () => {
-	const raw = localStorage.getItem('profileUserId')
+	const raw = localStorage.getItem(scopedKey('profileUserId'))
 	if (!raw) return null
 
 	const parsed = Number(raw)
@@ -43,7 +185,7 @@ const getStoredProfileUserId = () => {
 }
 
 const getStoredNumber = (key) => {
-	const raw = localStorage.getItem(key)
+	const raw = localStorage.getItem(scopedKey(key))
 	if (!raw) return null
 
 	const parsed = Number(raw)
@@ -51,7 +193,7 @@ const getStoredNumber = (key) => {
 }
 
 const getStoredArray = (key) => {
-	const raw = localStorage.getItem(key)
+	const raw = localStorage.getItem(scopedKey(key))
 	if (!raw) return []
 
 	try {
@@ -85,24 +227,46 @@ export const useFoodStore = defineStore('food', {
 	}),
 
 	actions: {
+		resetAccountState() {
+			this.user = null
+			this.bmi = null
+			this.bmiCategory = null
+			this.meals = []
+			this.favorites = []
+			this.favoritesLoaded = false
+			this.weeklyPlanner = getEmptyPlanner()
+			this.profileUserId = null
+			this.selectedMeal = null
+			this.loading = false
+			this.error = null
+		},
+
 		hydrateProfileContext() {
+			const authUserId = getCurrentAuthUserId()
+
 			if (!this.user) {
-				const profileRaw = localStorage.getItem('userProfile')
+				const profileRaw = localStorage.getItem(scopedKey('userProfile', authUserId))
 				if (profileRaw) {
 					try {
 						this.user = JSON.parse(profileRaw)
 					} catch (error) {
 						console.error('Failed to parse stored profile', error)
 					}
+				} else {
+					this.user = null
 				}
 			}
 
 			if (!this.bmi) {
 				this.bmi = getStoredNumber('userBmi')
+			} else if (!localStorage.getItem(scopedKey('userBmi', authUserId))) {
+				this.bmi = null
 			}
 
 			if (!this.bmiCategory) {
-				this.bmiCategory = localStorage.getItem('userBmiCategory') || null
+				this.bmiCategory = localStorage.getItem(scopedKey('userBmiCategory', authUserId)) || null
+			} else if (!localStorage.getItem(scopedKey('userBmiCategory', authUserId))) {
+				this.bmiCategory = null
 			}
 
 			if (!this.profileUserId) {
@@ -131,8 +295,14 @@ export const useFoodStore = defineStore('food', {
 			return Number.isFinite(parsedAuthId) && parsedAuthId > 0 ? parsedAuthId : null
 		},
 
+		resolveAuthUserId(userId) {
+			const candidate = userId ?? getCurrentAuthUserId()
+			const parsed = Number(candidate)
+			return Number.isFinite(parsed) && parsed > 0 ? parsed : null
+		},
+
 		async fetchPlanner(userId) {
-			const resolvedUserId = this.resolvePlannerUserId(userId)
+			const resolvedUserId = this.resolveAuthUserId(userId)
 			if (!resolvedUserId) return
 
 			this.loading = true
@@ -213,15 +383,16 @@ export const useFoodStore = defineStore('food', {
 
 				if (response?.data?.user_id) {
 					this.profileUserId = response.data.user_id
-					localStorage.setItem('profileUserId', String(response.data.user_id))
+					localStorage.setItem(scopedKey('profileUserId'), String(response.data.user_id))
 				}
 
 				this.bmi = response.data.bmi
 				this.bmiCategory = response.data.category
-				localStorage.setItem('profileCompleted', 'true')
-				localStorage.setItem('userProfile', JSON.stringify(payload))
-				localStorage.setItem('userBmi', String(response.data.bmi ?? ''))
-				localStorage.setItem('userBmiCategory', response.data.category ?? '')
+				const authUserId = getCurrentAuthUserId()
+				localStorage.setItem(scopedKey('profileCompleted', authUserId), 'true')
+				localStorage.setItem(scopedKey('userProfile', authUserId), JSON.stringify(payload))
+				localStorage.setItem(scopedKey('userBmi', authUserId), String(response.data.bmi ?? ''))
+				localStorage.setItem(scopedKey('userBmiCategory', authUserId), response.data.category ?? '')
 
 				await this.fetchMeals()
 			} catch (err) {
@@ -259,10 +430,16 @@ export const useFoodStore = defineStore('food', {
 					fats: meal.nutrition?.fats ?? 0,
 					ingredients: meal.ingredients ?? [],
 					recipe: (meal.recipes ?? []).map((step) => step.instruction),
-					imageSeed: meal.imageSeed || 'photo-1546069901-ba9599a7e63c'
+					imageSeed: getMealImageSeed({
+						name: meal.name,
+						type: meal.meal_type,
+						ingredients: meal.ingredients,
+						imageSeed: meal.imageSeed,
+						image_seed: meal.image_seed
+					})
 				}))
 
-				localStorage.setItem('userMeals', JSON.stringify(this.meals))
+				localStorage.setItem(scopedKey('userMeals'), JSON.stringify(this.meals))
 			} catch (err) {
 				this.error = err?.response?.data?.error || 'Failed to fetch meals'
 				console.error(err)
@@ -303,7 +480,13 @@ export const useFoodStore = defineStore('food', {
 					fats: nutrition.fats ?? 0,
 					ingredients: payload.ingredients ?? [],
 					recipe: (payload.recipes ?? []).map((step) => step.instruction),
-					imageSeed: 'photo-1546069901-ba9599a7e63c'
+					imageSeed: getMealImageSeed({
+						name: mealData.name,
+						type: mealData.meal_type,
+						ingredients: payload.ingredients,
+						imageSeed: mealData.imageSeed,
+						image_seed: mealData.image_seed
+					})
 				}
 
 				this.selectedMeal = fullMeal
@@ -340,7 +523,7 @@ export const useFoodStore = defineStore('food', {
 		},
 
 		async fetchFavorites(userId) {
-			const resolvedUserId = this.resolvePlannerUserId(userId)
+			const resolvedUserId = this.resolveAuthUserId(userId)
 			if (!resolvedUserId) return
 
 			this.loading = true
@@ -360,10 +543,11 @@ export const useFoodStore = defineStore('food', {
 						fats: item.fats ?? 0,
 						ingredients: item.ingredients ?? [],
 						recipe: item.recipes ?? [],
-						imageSeed: item.imageSeed || 'photo-1546069901-ba9599a7e63c'
+						imageSeed: getMealImageSeed(item)
 					}
 				})
 				this.favoritesLoaded = true
+				localStorage.setItem(scopedKey('favorites'), JSON.stringify(this.favorites))
 			} catch (err) {
 				this.error = err?.response?.data?.error || 'Failed to fetch favorites'
 				console.error(err)
@@ -373,7 +557,7 @@ export const useFoodStore = defineStore('food', {
 		},
 
 		async addFavorite(meal, userId) {
-			const resolvedUserId = this.resolvePlannerUserId(userId)
+			const resolvedUserId = this.resolveAuthUserId(userId)
 			if (!resolvedUserId || !meal?.id) return
 
 			if (this.isFavorite(meal.id)) return
@@ -388,6 +572,7 @@ export const useFoodStore = defineStore('food', {
 				})
 
 				this.favorites.push(normalizeMeal(meal))
+				localStorage.setItem(scopedKey('favorites'), JSON.stringify(this.favorites))
 			} catch (err) {
 				this.error = err?.response?.data?.error || 'Failed to add favorite'
 				console.error(err)
@@ -397,7 +582,7 @@ export const useFoodStore = defineStore('food', {
 		},
 
 		async removeFavorite(meal, userId) {
-			const resolvedUserId = this.resolvePlannerUserId(userId)
+			const resolvedUserId = this.resolveAuthUserId(userId)
 			if (!resolvedUserId || !meal?.id) return
 
 			this.loading = true
@@ -412,6 +597,7 @@ export const useFoodStore = defineStore('food', {
 				})
 
 				this.favorites = this.favorites.filter((favoriteMeal) => favoriteMeal.id !== meal.id)
+				localStorage.setItem(scopedKey('favorites'), JSON.stringify(this.favorites))
 			} catch (err) {
 				this.error = err?.response?.data?.error || 'Failed to remove favorite'
 				console.error(err)
@@ -431,7 +617,7 @@ export const useFoodStore = defineStore('food', {
 		async addToPlanner(day, meal, userId) {
 			const normalizedDay = normalizeDay(day)
 			if (!normalizedDay || !Object.prototype.hasOwnProperty.call(this.weeklyPlanner, normalizedDay)) return
-			const resolvedUserId = this.resolvePlannerUserId(userId)
+			const resolvedUserId = this.resolveAuthUserId(userId)
 			if (!resolvedUserId || !meal?.id) return
 
 			this.loading = true
@@ -456,7 +642,7 @@ export const useFoodStore = defineStore('food', {
 		async removeFromPlanner(day, userId) {
 			const normalizedDay = normalizeDay(day)
 			if (!normalizedDay || !Object.prototype.hasOwnProperty.call(this.weeklyPlanner, normalizedDay)) return
-			const resolvedUserId = this.resolvePlannerUserId(userId)
+			const resolvedUserId = this.resolveAuthUserId(userId)
 			if (!resolvedUserId) return
 
 			this.loading = true
@@ -480,4 +666,3 @@ export const useFoodStore = defineStore('food', {
 		}
 	}
 })
-

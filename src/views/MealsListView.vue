@@ -50,10 +50,11 @@
         >
           <div class="relative h-56 overflow-hidden">
             <img
-              :src="`https://images.unsplash.com/${meal.imageSeed}?auto=format&fit=crop&w=600&q=80`"
+              :src="meal.imageSeed?.startsWith('http') ? meal.imageSeed : `https://images.unsplash.com/${meal.imageSeed}?auto=format&fit=crop&w=600&q=80`"
               :alt="meal.name"
               class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               referrerpolicy="no-referrer"
+              @error="handleImageError"
             />
             <div class="absolute top-4 left-4">
               <span class="px-3 py-1 bg-white/90 backdrop-blur-md text-green-700 rounded-full text-xs font-bold uppercase tracking-wider">
@@ -131,47 +132,20 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
-import { useRoute } from 'vue-router';
 import { useFoodStore } from '@/stores/useFoodStore';
 import { useAuthStore } from '@/stores/authstore';
 import { UtensilsCrossed, ArrowRight, SearchX, Heart, CalendarPlus, X, Plus } from 'lucide-vue-next';
 
 const router = useRouter();
-const route = useRoute();
 const foodStore = useFoodStore();
 const authStore = useAuthStore();
 const showPlannerModal = ref(false);
 const mealToPlan = ref(null);
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
-const targetPlannerDay = ref('');
-
-const normalizeDay = (day) => {
-  if (!day) return '';
-
-  const normalized = String(day).trim().toLowerCase();
-  const dayMap = {
-    monday: 'Monday',
-    tuesday: 'Tuesday',
-    wednesday: 'Wednesday',
-    thursday: 'Thursday',
-    friday: 'Friday',
-    saturday: 'Saturday',
-    sunday: 'Sunday'
-  };
-
-  return dayMap[normalized] || '';
-};
 
 onMounted(async () => {
   authStore.loadUser();
   foodStore.hydrateProfileContext();
-
-  targetPlannerDay.value = normalizeDay(route.query.plannerDay || localStorage.getItem('pendingPlannerDay'));
-  if (targetPlannerDay.value) {
-    localStorage.setItem('pendingPlannerDay', targetPlannerDay.value);
-  } else {
-    localStorage.removeItem('pendingPlannerDay');
-  }
 
   if (!foodStore.user || !foodStore.bmiCategory) {
     router.push('/profile');
@@ -197,12 +171,6 @@ const toggleFavorite = async (meal) => {
 
 const openPlannerModal = (meal) => {
   mealToPlan.value = meal;
-
-  if (targetPlannerDay.value) {
-    planMeal(targetPlannerDay.value);
-    return;
-  }
-
   showPlannerModal.value = true;
 };
 
@@ -210,11 +178,9 @@ const planMeal = async (day) => {
   await foodStore.addToPlanner(day, mealToPlan.value, authStore.userId);
   showPlannerModal.value = false;
   mealToPlan.value = null;
+};
 
-  if (targetPlannerDay.value) {
-    localStorage.removeItem('pendingPlannerDay');
-    targetPlannerDay.value = '';
-    router.push('/planner');
-  }
+const handleImageError = (event) => {
+  event.target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=600&q=80';
 };
 </script>

@@ -27,10 +27,11 @@
           <div v-if="meal" class="space-y-4 flex flex-col h-full">
             <div class="relative h-32 rounded-2xl overflow-hidden shadow-sm">
               <img
-                :src="`https://images.unsplash.com/${meal.imageSeed}?auto=format&fit=crop&w=400&q=80`"
+                :src="meal.imageSeed?.startsWith('http') ? meal.imageSeed : `https://images.unsplash.com/${meal.imageSeed}?auto=format&fit=crop&w=400&q=80`"
                 :alt="meal.name"
                 class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                 referrerpolicy="no-referrer"
+                @error="handleImageError"
               />
               <button
                 @click="removeMeal(day)"
@@ -54,14 +55,14 @@
             </button>
           </div>
 
-          <div v-else class="flex-grow flex flex-col items-center justify-center space-y-4 border-2 border-dashed border-gray-100 rounded-2xl p-6 bg-gray-50/50 group-hover:border-green-200 transition-colors">
+          <button v-else type="button" @click="goToMeals" class="flex-grow flex flex-col items-center justify-center space-y-4 border-2 border-dashed border-gray-100 rounded-2xl p-6 bg-gray-50/50 group-hover:border-green-200 transition-colors cursor-pointer text-left">
             <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm text-gray-300 group-hover:text-green-400 transition-colors">
               <Plus class="w-6 h-6" />
             </div>
-            <router-link :to="{ path: '/meals', query: { plannerDay: day } }" class="text-xs font-bold text-gray-400 hover:text-green-600 transition-colors uppercase tracking-widest">
+            <span class="text-xs font-bold text-gray-400 group-hover:text-green-600 transition-colors uppercase tracking-widest">
               Add Meal
-            </router-link>
-          </div>
+            </span>
+          </button>
         </div>
       </div>
     </div>
@@ -91,5 +92,13 @@ const viewDetails = (meal) => {
 
 const removeMeal = async (day) => {
   await foodStore.removeFromPlanner(day, authStore.userId);
+};
+
+const goToMeals = () => {
+  router.push('/meals');
+};
+
+const handleImageError = (event) => {
+  event.target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=400&q=80';
 };
 </script>

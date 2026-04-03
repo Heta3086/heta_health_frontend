@@ -2,6 +2,7 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '../stores/authstore'
+import { useFoodStore } from '@/stores/useFoodStore'
 import { UserPlus } from 'lucide-vue-next'
 
 const auth = useAuthStore()
@@ -28,6 +29,8 @@ const handleSignup = async () => {
       password: password.value
     })
 
+    useFoodStore().resetAccountState()
+    auth.clearSession()
     router.push('/login')
   } catch (error) {
     console.error('Signup failed', error)

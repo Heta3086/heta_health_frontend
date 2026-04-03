@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuthStore } from '@/stores/authstore'
+import { useFoodStore } from '@/stores/useFoodStore'
 
 // Public Pages
 import HomeView from '@/views/HomeView.vue'
@@ -127,12 +128,16 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const auth = useAuthStore()
+  const food = useFoodStore()
 
   // load user from localStorage
   auth.loadUser()
+  food.hydrateProfileContext()
 
   if (to.meta.requiresAuth && !auth.isLoggedIn) {
     next('/login')
+  } else if (to.meta.requiresAuth && auth.isLoggedIn && to.path !== '/profile' && (!food.user || !food.bmiCategory)) {
+    next('/profile')
   } else {
     next()
   }

@@ -9,10 +9,11 @@
       <div class="space-y-8">
         <div class="relative rounded-[3rem] overflow-hidden shadow-2xl group">
           <img
-            :src="`https://images.unsplash.com/${meal.imageSeed}?auto=format&fit=crop&w=1200&q=80`"
+            :src="meal.imageSeed?.startsWith('http') ? meal.imageSeed : `https://images.unsplash.com/${meal.imageSeed}?auto=format&fit=crop&w=1200&q=80`"
             :alt="meal.name"
             class="w-full aspect-[4/3] object-cover group-hover:scale-105 transition-transform duration-700"
             referrerpolicy="no-referrer"
+            @error="handleImageError"
           />
           <div class="absolute top-6 right-6 flex flex-col gap-3">
             <button
@@ -222,5 +223,9 @@ const toggleFavorite = async () => {
   }
 
   await foodStore.addFavorite(meal.value, authStore.userId);
+};
+
+const handleImageError = (event) => {
+  event.target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=1200&q=80';
 };
 </script>

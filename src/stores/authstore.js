@@ -76,6 +76,16 @@ export const useAuthStore = defineStore('auth', {
       }
     },
 
+    clearSession() {
+      this.userId = null
+      this.userName = ''
+      this.isLoggedIn = false
+      this.loading = false
+      this.error = null
+      localStorage.removeItem('userId')
+      localStorage.removeItem('userName')
+    },
+
     async logout() {
       this.loading = true
       this.error = null
@@ -87,12 +97,7 @@ export const useAuthStore = defineStore('auth', {
       } catch (error) {
         this.error = error?.response?.data?.error || 'Logout failed'
       } finally {
-        this.userId = null
-        this.userName = ''
-        this.isLoggedIn = false
-        this.loading = false
-        localStorage.removeItem('userId')
-        localStorage.removeItem('userName')
+        this.clearSession()
       }
     }
   }

@@ -178,6 +178,8 @@ const toggleAllergy = (option) => {
 }
 
 onMounted(async () => {
+  auth.loadUser()
+
   if (food.allergies.length === 0) {
     await food.fetchAllergies()
   }
@@ -186,8 +188,10 @@ onMounted(async () => {
     await food.fetchDietOptions()
   }
 
-  const storedProfileRaw = localStorage.getItem('userProfile')
-  const hasStoredProfile = localStorage.getItem('profileCompleted') === 'true'
+  const profileKey = `userProfile:${auth.userId}`
+  const completedKey = `profileCompleted:${auth.userId}`
+  const storedProfileRaw = localStorage.getItem(profileKey)
+  const hasStoredProfile = localStorage.getItem(completedKey) === 'true'
   profileCompleted.value = hasStoredProfile
 
   if (food.user) {
@@ -243,8 +247,8 @@ const submitProfile = async () => {
 
     await food.submitUserForm(profilePayload)
 
-    localStorage.setItem('profileCompleted', 'true')
-    localStorage.setItem('userProfile', JSON.stringify(profilePayload))
+    localStorage.setItem(`profileCompleted:${auth.userId}`, 'true')
+    localStorage.setItem(`userProfile:${auth.userId}`, JSON.stringify(profilePayload))
     profileCompleted.value = true
 
     router.push('/bmi-analysis')

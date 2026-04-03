@@ -46,7 +46,7 @@
 
       <div v-else class="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
         <article v-for="meal in food.meals.slice(0, 3)" :key="meal.id" class="rounded-3xl border border-gray-100 bg-white shadow-sm overflow-hidden">
-          <img :src="`https://images.unsplash.com/${meal.imageSeed}?auto=format&fit=crop&w=800&q=80`" :alt="meal.name" class="h-48 w-full object-cover" referrerpolicy="no-referrer" />
+          <img :src="meal.imageSeed?.startsWith('http') ? meal.imageSeed : `https://images.unsplash.com/${meal.imageSeed}?auto=format&fit=crop&w=800&q=80`" :alt="meal.name" class="h-48 w-full object-cover" referrerpolicy="no-referrer" @error="handleImageError" />
           <div class="p-5 space-y-2">
             <p class="text-xs uppercase tracking-[0.3em] text-green-600 font-bold">{{ meal.type }}</p>
             <h3 class="text-xl font-bold text-gray-900">{{ meal.name }}</h3>
@@ -77,7 +77,11 @@ onMounted(async () => {
 
 const displayName = computed(() => auth.userName || 'Champion')
 const profileButtonLabel = computed(() => {
-  const completed = localStorage.getItem('profileCompleted') === 'true'
+  const completed = localStorage.getItem(`profileCompleted:${auth.userId}`) === 'true'
   return completed ? 'Your Profile' : 'Complete Profile'
 })
+
+const handleImageError = (event) => {
+  event.target.src = 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=800&q=80'
+}
 </script>

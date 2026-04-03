@@ -75,7 +75,7 @@ const showLogoutConfirm = ref(false);
 const hasCompletedProfile = ref(false);
 
 const refreshProfileStatus = () => {
-  hasCompletedProfile.value = localStorage.getItem('profileCompleted') === 'true' || !!food.profileUserId;
+  hasCompletedProfile.value = localStorage.getItem(`profileCompleted:${auth.userId}`) === 'true' || !!food.profileUserId;
 };
 
 onMounted(() => {
