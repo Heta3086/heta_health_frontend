@@ -36,7 +36,7 @@
             referrerpolicy="no-referrer"
           />
           <button
-            @click.stop="foodStore.toggleFavorite(meal)"
+            @click.stop="removeFavorite(meal)"
             class="absolute top-4 right-4 p-3 bg-white/90 backdrop-blur-md text-red-500 rounded-full transition-all shadow-sm hover:bg-red-500 hover:text-white"
           >
             <Trash2 class="w-5 h-5" />
@@ -72,15 +72,28 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/authstore';
 import { useFoodStore } from '@/stores/useFoodStore';
 import { Heart, Trash2, ArrowRight } from 'lucide-vue-next';
 
 const router = useRouter();
+const authStore = useAuthStore();
 const foodStore = useFoodStore();
+
+onMounted(async () => {
+  authStore.loadUser();
+  foodStore.hydrateProfileContext();
+  await foodStore.fetchFavorites(authStore.userId);
+});
 
 const viewDetails = (meal) => {
   foodStore.setSelectedMeal(meal);
   router.push(`/meal/${meal.id}`);
+};
+
+const removeFavorite = async (meal) => {
+  await foodStore.removeFavorite(meal, authStore.userId);
 };
 </script>

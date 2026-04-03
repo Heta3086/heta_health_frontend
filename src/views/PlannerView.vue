@@ -58,7 +58,7 @@
             <div class="w-12 h-12 bg-white rounded-xl flex items-center justify-center shadow-sm text-gray-300 group-hover:text-green-400 transition-colors">
               <Plus class="w-6 h-6" />
             </div>
-            <router-link to="/meals" class="text-xs font-bold text-gray-400 hover:text-green-600 transition-colors uppercase tracking-widest">
+            <router-link :to="{ path: '/meals', query: { plannerDay: day } }" class="text-xs font-bold text-gray-400 hover:text-green-600 transition-colors uppercase tracking-widest">
               Add Meal
             </router-link>
           </div>

@@ -78,6 +78,7 @@ export const useFoodStore = defineStore('food', {
 		favorites: [],
 		weeklyPlanner: getEmptyPlanner(),
 		profileUserId: getStoredProfileUserId(),
+		favoritesLoaded: false,
 		selectedMeal: null,
 		loading: false,
 		error: null
@@ -338,15 +339,89 @@ export const useFoodStore = defineStore('food', {
 			}
 		},
 
-		toggleFavorite(meal) {
-			const existingIndex = this.favorites.findIndex((favoriteMeal) => favoriteMeal.id === meal.id)
+		async fetchFavorites(userId) {
+			const resolvedUserId = this.resolvePlannerUserId(userId)
+			if (!resolvedUserId) return
 
-			if (existingIndex >= 0) {
-				this.favorites.splice(existingIndex, 1)
-				return
+			this.loading = true
+			this.error = null
+
+			try {
+				const response = await api.get(`/favorites/${resolvedUserId}`)
+				this.favorites = (response.data || []).map((item) => {
+					const cachedMeal = this.meals.find((meal) => meal.id === item.id)
+					return cachedMeal || {
+						id: item.id,
+						name: item.name,
+						type: item.meal_type || 'Favorite',
+						calories: item.calories ?? 0,
+						protein: item.protein ?? 0,
+						carbs: item.carbs ?? 0,
+						fats: item.fats ?? 0,
+						ingredients: item.ingredients ?? [],
+						recipe: item.recipes ?? [],
+						imageSeed: item.imageSeed || 'photo-1546069901-ba9599a7e63c'
+					}
+				})
+				this.favoritesLoaded = true
+			} catch (err) {
+				this.error = err?.response?.data?.error || 'Failed to fetch favorites'
+				console.error(err)
+			} finally {
+				this.loading = false
 			}
+		},
 
-			this.favorites.push(meal)
+		async addFavorite(meal, userId) {
+			const resolvedUserId = this.resolvePlannerUserId(userId)
+			if (!resolvedUserId || !meal?.id) return
+
+			if (this.isFavorite(meal.id)) return
+
+			this.loading = true
+			this.error = null
+
+			try {
+				await api.post('/favorites', {
+					user_id: resolvedUserId,
+					meal_id: meal.id
+				})
+
+				this.favorites.push(normalizeMeal(meal))
+			} catch (err) {
+				this.error = err?.response?.data?.error || 'Failed to add favorite'
+				console.error(err)
+			} finally {
+				this.loading = false
+			}
+		},
+
+		async removeFavorite(meal, userId) {
+			const resolvedUserId = this.resolvePlannerUserId(userId)
+			if (!resolvedUserId || !meal?.id) return
+
+			this.loading = true
+			this.error = null
+
+			try {
+				await api.delete('/favorites', {
+					data: {
+						user_id: resolvedUserId,
+						meal_id: meal.id
+					}
+				})
+
+				this.favorites = this.favorites.filter((favoriteMeal) => favoriteMeal.id !== meal.id)
+			} catch (err) {
+				this.error = err?.response?.data?.error || 'Failed to remove favorite'
+				console.error(err)
+			} finally {
+				this.loading = false
+			}
+		},
+
+		toggleFavorite(meal) {
+			return this.isFavorite(meal.id) ? this.removeFavorite(meal) : this.addFavorite(meal)
 		},
 
 		isFavorite(mealId) {

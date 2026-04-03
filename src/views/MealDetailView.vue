@@ -16,7 +16,7 @@
           />
           <div class="absolute top-6 right-6 flex flex-col gap-3">
             <button
-              @click="foodStore.toggleFavorite(meal)"
+              @click="toggleFavorite"
               class="p-4 rounded-2xl backdrop-blur-md transition-all shadow-lg"
               :class="foodStore.isFavorite(meal.id) ? 'bg-red-500 text-white' : 'bg-white/90 text-gray-400 hover:text-red-500'"
             >
@@ -211,5 +211,16 @@ onMounted(async () => {
 const planMeal = async (day) => {
   await foodStore.addToPlanner(day, meal.value, authStore.userId);
   showPlannerModal.value = false;
+};
+
+const toggleFavorite = async () => {
+  if (!meal.value) return;
+
+  if (foodStore.isFavorite(meal.value.id)) {
+    await foodStore.removeFavorite(meal.value, authStore.userId);
+    return;
+  }
+
+  await foodStore.addFavorite(meal.value, authStore.userId);
 };
 </script>

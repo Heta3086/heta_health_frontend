@@ -62,7 +62,7 @@
             </div>
             <div class="absolute top-4 right-4 flex flex-col gap-2">
               <button
-                @click.stop="foodStore.toggleFavorite(meal)"
+                @click.stop="toggleFavorite(meal)"
                 class="p-2 rounded-full backdrop-blur-md transition-all shadow-sm"
                 :class="foodStore.isFavorite(meal.id) ? 'bg-red-500 text-white' : 'bg-white/90 text-gray-400 hover:text-red-500'"
               >
@@ -131,29 +131,54 @@
 <script setup>
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
 import { useFoodStore } from '@/stores/useFoodStore';
 import { useAuthStore } from '@/stores/authstore';
 import { UtensilsCrossed, ArrowRight, SearchX, Heart, CalendarPlus, X, Plus } from 'lucide-vue-next';
 
 const router = useRouter();
+const route = useRoute();
 const foodStore = useFoodStore();
 const authStore = useAuthStore();
 const showPlannerModal = ref(false);
 const mealToPlan = ref(null);
 const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+const targetPlannerDay = ref('');
+
+const normalizeDay = (day) => {
+  if (!day) return '';
+
+  const normalized = String(day).trim().toLowerCase();
+  const dayMap = {
+    monday: 'Monday',
+    tuesday: 'Tuesday',
+    wednesday: 'Wednesday',
+    thursday: 'Thursday',
+    friday: 'Friday',
+    saturday: 'Saturday',
+    sunday: 'Sunday'
+  };
+
+  return dayMap[normalized] || '';
+};
 
 onMounted(async () => {
   authStore.loadUser();
   foodStore.hydrateProfileContext();
+
+  targetPlannerDay.value = normalizeDay(route.query.plannerDay || localStorage.getItem('pendingPlannerDay'));
+  if (targetPlannerDay.value) {
+    localStorage.setItem('pendingPlannerDay', targetPlannerDay.value);
+  } else {
+    localStorage.removeItem('pendingPlannerDay');
+  }
 
   if (!foodStore.user || !foodStore.bmiCategory) {
     router.push('/profile');
     return;
   }
 
-  if (foodStore.meals.length === 0) {
-    await foodStore.fetchMeals();
-  }
+  await foodStore.fetchMeals();
 });
 
 const viewDetails = (meal) => {
@@ -161,8 +186,23 @@ const viewDetails = (meal) => {
   router.push(`/meal/${meal.id}`);
 };
 
+const toggleFavorite = async (meal) => {
+  if (foodStore.isFavorite(meal.id)) {
+    await foodStore.removeFavorite(meal, authStore.userId);
+    return;
+  }
+
+  await foodStore.addFavorite(meal, authStore.userId);
+};
+
 const openPlannerModal = (meal) => {
   mealToPlan.value = meal;
+
+  if (targetPlannerDay.value) {
+    planMeal(targetPlannerDay.value);
+    return;
+  }
+
   showPlannerModal.value = true;
 };
 
@@ -170,5 +210,11 @@ const planMeal = async (day) => {
   await foodStore.addToPlanner(day, mealToPlan.value, authStore.userId);
   showPlannerModal.value = false;
   mealToPlan.value = null;
+
+  if (targetPlannerDay.value) {
+    localStorage.removeItem('pendingPlannerDay');
+    targetPlannerDay.value = '';
+    router.push('/planner');
+  }
 };
 </script>

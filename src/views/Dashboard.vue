@@ -70,7 +70,7 @@ onMounted(async () => {
   auth.loadUser()
   food.hydrateProfileContext()
 
-  if (food.user && food.bmiCategory && food.meals.length === 0) {
+  if (food.user && food.bmiCategory) {
     await food.fetchMeals()
   }
 })
