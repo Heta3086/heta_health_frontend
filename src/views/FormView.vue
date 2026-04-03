@@ -53,9 +53,9 @@
                   v-model.number="form.age" 
                   type="number" 
                   required
-                  min="1"
+                  min="18"
                   max="120"
-                  placeholder="Your age"
+                  placeholder="18+"
                   class="w-full pl-12 pr-4 py-4 rounded-2xl border-2 border-gray-100 focus:border-green-500 focus:ring-4 focus:ring-green-500/10 outline-none transition-all bg-gray-50/50 group-hover:bg-white"
                 />
                 <Calendar class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 group-focus-within:text-green-600 transition-colors" />
@@ -161,6 +161,10 @@
             <Utensils class="w-6 h-6 text-green-600" />
             <h3 class="text-xl font-bold text-gray-900">Dietary Preference</h3>
           </div>
+
+          <p v-if="dietOptions.length === 0" class="text-sm font-medium text-amber-700">
+            No dietary options found in database. Please add diet types in meals data.
+          </p>
           
           <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <button 
@@ -189,9 +193,12 @@
         </div>
         
         <div class="pt-10">
+          <p v-if="foodStore.error" class="mb-4 text-center text-sm font-medium text-red-600">
+            {{ foodStore.error }}
+          </p>
           <button 
             type="submit" 
-            :disabled="loading"
+            :disabled="loading || dietOptions.length === 0"
             class="w-full py-6 bg-green-600 text-white rounded-[2rem] font-black text-xl hover:bg-green-700 transition-all shadow-2xl shadow-green-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center group"
           >
             <Loader2 v-if="loading" class="w-6 h-6 mr-3 animate-spin" />
@@ -208,8 +215,9 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
+import { useAuthStore } from '@/stores/authstore';
 import { useFoodStore } from '@/stores/useFoodStore';
 import { 
   Loader2, User, Calendar, Users, Ruler, Weight, 
@@ -218,6 +226,7 @@ import {
 } from 'lucide-vue-next';
 
 const router = useRouter();
+const auth = useAuthStore();
 const foodStore = useFoodStore();
 const loading = ref(false);
 const selectedAllergy = ref('');
@@ -232,14 +241,32 @@ const form = ref({
   allergies: []
 });
 
-const allergyOptions = ['dairy', 'peanuts', 'gluten', 'eggs'];
+const fallbackAllergyOptions = ['dairy', 'peanuts', 'gluten', 'eggs'];
+const allergyOptions = computed(() => {
+  const dbAllergies = (foodStore.allergies || [])
+    .map((item) => item?.name)
+    .filter(Boolean);
 
-const dietOptions = [
-  { label: 'Vegetarian', value: 'veg', icon: Leaf, sub: 'Plant Based' },
-  { label: 'Non-Veg', value: 'non_veg', icon: Beef, sub: 'Meat & More' },
-  { label: 'Eggetarian', value: 'eggetarian', icon: Egg, sub: 'Eggs Included' },
-  { label: 'Vegan', value: 'vegan', icon: Salad, sub: 'Pure Plant' }
-];
+  return dbAllergies.length > 0 ? dbAllergies : fallbackAllergyOptions;
+});
+
+const dietMeta = {
+  veg: { icon: Leaf, sub: 'Plant Based' },
+  non_veg: { icon: Beef, sub: 'Meat & More' },
+  eggetarian: { icon: Egg, sub: 'Eggs Included' },
+  vegan: { icon: Salad, sub: 'Pure Plant' }
+};
+
+const dietOptions = computed(() => {
+  const source = foodStore.dietOptions || [];
+
+  return source.map((diet) => ({
+    label: diet.label,
+    value: diet.value,
+    icon: dietMeta[diet.value]?.icon || Utensils,
+    sub: dietMeta[diet.value]?.sub || 'Balanced Plan'
+  }));
+});
 
 const addAllergy = () => {
   if (selectedAllergy.value && !form.value.allergies.includes(selectedAllergy.value)) {
@@ -252,11 +279,29 @@ const removeAllergy = (allergy) => {
   form.value.allergies = form.value.allergies.filter(a => a !== allergy);
 };
 
+onMounted(async () => {
+  if (foodStore.allergies.length === 0) {
+    await foodStore.fetchAllergies();
+  }
+
+  if (foodStore.dietOptions.length === 0) {
+    await foodStore.fetchDietOptions();
+  }
+
+  if (!dietOptions.value.some((diet) => diet.value === form.value.dietType) && dietOptions.value.length > 0) {
+    form.value.dietType = dietOptions.value[0].value;
+  }
+});
+
 const handleSubmit = async () => {
   loading.value = true;
+  foodStore.error = null;
   try {
-    await foodStore.submitUserForm(form.value);
-    router.push('/meals');
+    await foodStore.submitUserForm({
+      ...form.value,
+      auth_user_id: auth.userId
+    });
+    router.push('/bmi-analysis');
   } catch (err) {
     console.error(err);
   } finally {

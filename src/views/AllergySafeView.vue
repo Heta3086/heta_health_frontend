@@ -11,8 +11,22 @@
       <div class="mt-8 rounded-2xl border border-amber-200 bg-amber-50 p-6">
         <h2 class="text-lg font-bold text-gray-900">Common Tracked Allergens</h2>
         <p class="mt-3 text-sm text-gray-700">
-          Nuts, dairy, eggs, soy, shellfish, gluten, and sesame. You can define custom sensitivities too.
+          These entries are loaded from your database using the allergy API.
         </p>
+
+        <p v-if="loadingAllergies" class="mt-3 text-sm font-medium text-amber-700">Loading allergy data...</p>
+        <p v-else-if="allergyError" class="mt-3 text-sm font-medium text-red-600">{{ allergyError }}</p>
+
+        <div v-else-if="allergyNames.length > 0" class="mt-4 flex flex-wrap gap-2">
+          <span
+            v-for="name in allergyNames"
+            :key="name"
+            class="inline-flex items-center rounded-full border border-amber-200 bg-white px-3 py-1 text-xs font-semibold text-gray-700"
+          >
+            {{ name }}
+          </span>
+        </div>
+        <p v-else class="mt-3 text-sm text-gray-700">No allergy records found in the database.</p>
       </div>
 
       <div class="mt-6 rounded-2xl border border-green-100 bg-green-50 p-6">
@@ -41,3 +55,31 @@
     </div>
   </section>
 </template>
+
+<script setup>
+import { computed, onMounted, ref } from 'vue'
+import { useFoodStore } from '@/stores/useFoodStore'
+
+const foodStore = useFoodStore()
+const loadingAllergies = ref(false)
+const allergyError = ref('')
+
+const allergyNames = computed(() =>
+  (foodStore.allergies || [])
+    .map((item) => item?.name)
+    .filter(Boolean)
+)
+
+onMounted(async () => {
+  loadingAllergies.value = true
+  allergyError.value = ''
+
+  try {
+    await foodStore.fetchAllergies()
+  } catch (err) {
+    allergyError.value = 'Failed to load allergy data'
+  } finally {
+    loadingAllergies.value = false
+  }
+})
+</script>

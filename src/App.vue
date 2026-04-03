@@ -10,13 +10,34 @@
             <span class="text-xl font-bold text-green-800 tracking-tight">HealthyFoodAdvisor</span>
           </router-link>
           
-          <div class="hidden md:flex space-x-8">
-            <router-link to="/" class="text-gray-600 hover:text-green-600 font-medium transition-colors">Home</router-link>
-            <router-link to="/form" class="text-gray-600 hover:text-green-600 font-medium transition-colors">Get Started</router-link>
+          <div class="hidden md:flex space-x-8 items-center">
+            <router-link v-if="!auth.isLoggedIn" to="/" :class="navClass('/')">Home</router-link>
+            <router-link v-if="auth.isLoggedIn" to="/profile" :class="navClass('/profile')">Profile</router-link>
+            <router-link v-if="auth.isLoggedIn" to="/dashboard" :class="navClass('/dashboard')">Dashboard</router-link>
+            <router-link v-if="auth.isLoggedIn" to="/favorites" :class="navClass('/favorites')">Favorites</router-link>
+            <router-link v-if="auth.isLoggedIn" to="/planner" :class="navClass('/planner')">Planner</router-link>
+            <router-link v-if="!auth.isLoggedIn" to="/login" :class="navClass('/login')">Login</router-link>
+            <router-link v-if="!auth.isLoggedIn" to="/signup" :class="navClass('/signup')">Signup</router-link>
+            <button v-else @click="openLogoutConfirm" class="font-semibold text-red-600 hover:text-red-700 transition-colors">Logout</button>
           </div>
         </div>
       </div>
     </nav>
+
+    <div v-if="showLogoutConfirm" class="fixed inset-0 z-[100] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="w-full max-w-md rounded-3xl bg-white p-7 shadow-2xl border border-gray-100">
+        <h3 class="text-2xl font-black text-gray-900">Confirm Logout</h3>
+        <p class="mt-2 text-gray-600">Are you sure you want to log out from your account?</p>
+        <div class="mt-6 flex justify-end gap-3">
+          <button @click="showLogoutConfirm = false" class="px-5 py-2.5 rounded-xl bg-gray-100 text-gray-700 font-semibold hover:bg-gray-200 transition-colors">
+            Cancel
+          </button>
+          <button @click="confirmLogout" class="px-5 py-2.5 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors">
+            Confirm Logout
+          </button>
+        </div>
+      </div>
+    </div>
 
     <main>
       <router-view v-slot="{ Component }">
@@ -39,7 +60,55 @@
 </template>
 
 <script setup lang="ts">
+import { computed, onMounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
+import { useRoute } from 'vue-router';
+import { useAuthStore } from './stores/authstore';
+import { useFoodStore } from './stores/useFoodStore';
 import { Leaf } from 'lucide-vue-next';
+
+const auth = useAuthStore();
+const food = useFoodStore();
+const router = useRouter();
+const route = useRoute();
+const showLogoutConfirm = ref(false);
+const hasCompletedProfile = ref(false);
+
+const refreshProfileStatus = () => {
+  hasCompletedProfile.value = localStorage.getItem('profileCompleted') === 'true' || !!food.profileUserId;
+};
+
+onMounted(() => {
+  food.hydrateProfileContext();
+  refreshProfileStatus();
+});
+
+watch(() => route.fullPath, () => {
+  refreshProfileStatus();
+});
+
+watch(() => food.profileUserId, () => {
+  refreshProfileStatus();
+});
+
+const baseNavClass = 'font-medium transition-colors';
+const navClass = (path: string) => {
+  const isActive = computed(() => route.path === path || route.path.startsWith(`${path}/`)).value;
+  return isActive
+    ? `${baseNavClass} text-green-700`
+    : `${baseNavClass} text-gray-600 hover:text-green-600`;
+};
+
+const openLogoutConfirm = () => {
+  showLogoutConfirm.value = true;
+};
+
+const confirmLogout = async () => {
+  showLogoutConfirm.value = false;
+  await auth.logout();
+  hasCompletedProfile.value = false;
+  router.push('/');
+};
 </script>
 
 <style>

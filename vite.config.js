@@ -9,6 +9,8 @@ const __dirname = path.dirname(__filename);
 
 export default defineConfig(({mode}) => {
   const env = loadEnv(mode, '.', '');
+  const backendTarget = env.VITE_API_URL || 'http://localhost:8080';
+
   return {
     plugins: [vue(), tailwindcss()],
     define: {
@@ -23,6 +25,13 @@ export default defineConfig(({mode}) => {
       port: 5000,
       host: '0.0.0.0',
       hmr: process.env.DISABLE_HMR !== 'true',
+      proxy: {
+        '/api': {
+          target: backendTarget,
+          changeOrigin: true,
+          rewrite: (path) => path.replace(/^\/api/, ''),
+        },
+      },
     },
   };
 });
